@@ -13,7 +13,7 @@ const login = () => {
     localStorage.setItem('token', 'fake_token_123') // 存入假 Token
     router.push('/home') // 跳轉到 Home 頁面
   } else {
-    errorMsg.value = '帳號或密碼錯誤！'
+    errorMsg.value = 'Wrong account or password！'
   }
 }
 
