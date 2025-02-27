@@ -43,12 +43,22 @@ router.post('/add', verifyToken, async (req, res) => {
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const tasks = await Task.find({});
-
-        if (!tasks) {
-            return res.status(404).json({ error: 'Tasks not found' });
+        const { sortBy, order, status } = req.query;
+        let sortOptions = {};
+        if (sortBy) {
+            sortOptions[sortBy] = order === 'asc' ? 1 : -1;
+        } else if (order) {
+            sortOptions['due'] = order === 'asc' ? 1 : -1;
+        } else {
+            sortOptions = { due: 1 };
         }
 
+        const filterOptions = {};
+        if (status) {
+            filterOptions.status = status;
+        }
+
+        const tasks = await Task.find(filterOptions).sort(sortOptions);
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -100,7 +110,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Task not found' });
         }
         await task.deleteOne();
-        res.json({ message: 'Task deleted successfully' });
+        res.json({ message: 'Task deleted' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
