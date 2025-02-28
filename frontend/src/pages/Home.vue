@@ -27,7 +27,7 @@
           class="flex flex-row justify-between min-h-screen p-4 items-start gap-4"
         >
           <div
-            v-for="(cards, status) in tasks"
+            v-for="(cards, status) in mappedTasks()"
             :key="status"
             class="w-[30%] bg-gray-200 flex flex-col rounded-lg shadow-md p-4"
           >
@@ -57,20 +57,33 @@
         :style="{ left: modalLeft }"
         :class="{ 'translate-x-[-50%]': isCenter }"
       >
-        <h2 class="text-xl font-bold pb-2">{{ selectedTask.name }}</h2>
-        <p class="text-gray-600">Due: {{ selectedTask.dueDate }}</p>
-        <p class="text-gray-500">Assigned to: {{ selectedTask.username }}</p>
+        <TaskContent v-if="!isEditting" :task="selectedTask" />
+        <TaskEditor
+          v-if="isEditting"
+          :task="selectedTask"
+          v-on:cancel="cancelEdit"
+          v-on:save="saveTask"
+        />
 
-        <div class="flex flex-row items-center gap-x-2.5 mt-4 text-white">
+        <div
+          v-if="!isEditting"
+          class="flex flex-row items-center gap-x-2.5 mt-4 text-white"
+        >
+          <button
+            @click="deleteTask"
+            class="bg-red-500 px-4 py-2 rounded-md cursor-pointer"
+          >
+            Delete
+          </button>
           <button
             @click="editTask"
-            class="bg-red-500 px-4 py-2 rounded-md cursor-pointer"
+            class="bg-gray-500 px-4 py-2 rounded-md cursor-pointer"
           >
             Edit
           </button>
           <button
             @click="closeModal"
-            class="bg-red-500 px-4 py-2 rounded-md cursor-pointer"
+            class="bg-gray-500 px-4 py-2 rounded-md cursor-pointer"
           >
             Close
           </button>
@@ -83,24 +96,61 @@
 <script setup>
 import { ref } from "vue";
 import TaskCard from "@/components/TaskCard.vue";
+import TaskContent from "@/components/TaskContent.vue";
+import TaskEditor from "@/components/TaskEditor.vue";
 
-const tasks = ref({
-  // fake data
-  "To Do": [{ name: "Task A", dueDate: "2024-03-01", username: "Charlie" }],
-  "In Progress": [
-    { name: "Task 1", dueDate: "2024-02-25", username: "Alice" },
-    { name: "Task 2", dueDate: "2024-02-28", username: "Bob" },
-  ],
-  Done: [
-    { name: "Completed Task 1", dueDate: "2024-02-18", username: "Dave" },
-    { name: "Completed Task 2", dueDate: "2024-02-20", username: "Eve" },
-  ],
-});
+const tasks = ref([
+  {
+    name: "Task A",
+    dueDate: "2024-03-01",
+    username: "Charlie",
+    status: "To Do",
+  },
+  {
+    name: "Task 1",
+    dueDate: "2024-02-25",
+    username: "Alice",
+    status: "In Progress",
+  },
+  {
+    name: "Task 2",
+    dueDate: "2024-02-28",
+    username: "Bob",
+    status: "In Progress",
+  },
+  {
+    name: "Completed Task 1",
+    dueDate: "2024-02-18",
+    username: "Dave",
+    status: "Done",
+  },
+  {
+    name: "Completed Task 2",
+    dueDate: "2024-02-20",
+    username: "Eve",
+    status: "Done",
+  },
+]);
+
+function mappedTasks() {
+  const mapped = {
+    "To Do": [],
+    "In Progress": [],
+    Done: [],
+  };
+
+  tasks.value.forEach((task) => {
+    mapped[task.status].push(task);
+  });
+
+  return mapped;
+}
 
 const showModal = ref(false);
 const selectedTask = ref(null);
 const modalLeft = ref("50%"); // default center
 const isCenter = ref(false); // to handle translate
+const isEditting = ref(false);
 
 const openModal = (task, status) => {
   selectedTask.value = task;
@@ -123,4 +173,24 @@ const closeModal = () => {
   showModal.value = false;
   selectedTask.value = null;
 };
+
+function editTask() {
+  isEditting.value = true;
+}
+
+function deleteTask() {
+  if(confirm("Are you sure you want to delete this task?")) {
+    closeModal();
+  } 
+}
+
+function cancelEdit() {
+  isEditting.value = false;
+}
+
+function saveTask(task) {
+  isEditting.value = false;
+  console.log("Task saved!", task);
+  closeModal();
+}
 </script>
