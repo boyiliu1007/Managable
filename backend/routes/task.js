@@ -1,26 +1,9 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import Task from '../models/task.js';
 import User from '../models/user.js'
+import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
-
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token || !token.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'No token provided' });
-    }
-
-    try {
-        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error){
-        console.error("JWT Error:", error.message);
-        res.status(401).json({ error: 'Access denied' });
-    }
-}
-
 
 router.post('/', verifyToken, async (req, res) => {
     try {
