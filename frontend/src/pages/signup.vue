@@ -25,7 +25,7 @@
         </div>
 
         <div>
-          <label class="block text-gray-700 font-medium">確認密碼</label>
+          <label class="block text-gray-700 font-medium">comfirm password</label>
           <input 
             v-model="confirmPassword"
             type="password" 
@@ -41,17 +41,16 @@
           type="submit"
           class="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition duration-300"
         >
-          註冊
+          Signup
         </button>
       </form>
 
       <p class="text-center text-gray-600 mt-4">
-        已經有帳號？ <router-link to="/login" class="text-blue-500 hover:underline">登入</router-link>
+        Already signup？ <router-link to="/login" class="text-blue-500 hover:underline">Login</router-link>
       </p>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref } from 'vue'
@@ -69,24 +68,34 @@ const register = async () => {
   successMsg.value = ''
 
   if (!username.value || !password.value || !confirmPassword.value) {
-    errorMsg.value = '所有欄位都必須填寫！'
+    errorMsg.value = 'you need to fill out all the blank！'
+    // Clear the input fields
+    username.value = ''
+    password.value = ''
+    confirmPassword.value = ''
     return
   }
 
   if (password.value !== confirmPassword.value) {
-    errorMsg.value = '兩次輸入的密碼不一致！'
+    errorMsg.value = 'not the same password！'
+    // Clear the input fields
+    password.value = ''
+    confirmPassword.value = ''
     return
   }
 
   // 模擬 API 延遲 1.5 秒
   setTimeout(() => {
     if (username.value === 'test') {
-      errorMsg.value = '此帳號已被註冊！'
+      errorMsg.value = 'This account has already been used！'
     } else {
-      successMsg.value = '註冊成功！請登入'
+      successMsg.value = 'Success! Please login'
+      // Clear the input fields
+      username.value = ''
+      password.value = ''
+      confirmPassword.value = ''
       setTimeout(() => router.push('/login'), 1500) // 1.5 秒後跳轉到登入頁
     }
   }, 1500)
 }
-
 </script>
