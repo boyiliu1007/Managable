@@ -7,14 +7,11 @@ const router = express.Router();
 
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
-    console.log(token);
     if (!token || !token.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Access denied' });
+        return res.status(401).json({ error: 'No token provided' });
     }
 
     try {
-        // console.log(token.split(' ')[1]);
-        // console.log(process.env.JWT_SECRET);
         const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
         req.user = decoded;
         next();
@@ -25,11 +22,15 @@ const verifyToken = (req, res, next) => {
 }
 
 
-router.post('/add', verifyToken, async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     try {
         const { title, description = "", due, status } = req.body;
         const user = await User.findById(req.user.id);
         const username = user.username;
+
+        if (!title || !due) {
+            return res.status(400).json({ error: 'Title and due date are required' });
+        }
 
         const newTask = new Task({
             title,
@@ -39,7 +40,10 @@ router.post('/add', verifyToken, async (req, res) => {
             username: username
         });
         await newTask.save();
-        res.status(201).json(newTask);
+        res.status(201).json({ 
+            message: 'Task created successfully', 
+            task: newTask 
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -101,7 +105,10 @@ router.put('/:id', verifyToken, async (req, res) => {
             task[update] = req.body[update];
         });
         await task.save();
-        res.json(task);
+        res.json({
+            message: 'Task updated successfully',
+            task: task.toJSON()
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -114,7 +121,10 @@ router.delete('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Task not found' });
         }
         await task.deleteOne();
-        res.json({ message: 'Task deleted' });
+        res.json({ 
+            message: 'Task deleted successfully',
+            task: task.toJSON()
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
