@@ -91,12 +91,4 @@ const register = async () => {
   }, 1500)
 }
 
-
-return router
-return username 
-return password 
-return confirmPassword 
-return errorMsg
-return successMsg
-return register
 </script>
