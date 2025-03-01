@@ -1,9 +1,7 @@
 <template>
   <div>
     <!-- this is nav bar -->
-    <nav
-      class="bg-gray-800 text-white flex justify-between items-center shadow-lg px-[2%] py-[1%] h-[10vh] mb-[2vh]"
-    >
+    <nav class="bg-gray-800 text-white flex justify-between items-center shadow-lg px-[2%] py-[1%] h-[10vh] mb-[2vh]">
       <div class="text-xl font-bold">Managable</div>
       <button
         @click="logout"
@@ -23,9 +21,7 @@
           New Task
         </button>
 
-        <div
-          class="flex flex-row justify-between min-h-screen p-4 items-start gap-4"
-        >
+        <div class="flex flex-row justify-between min-h-screen p-4 items-start gap-4">
           <div
             v-for="(cards, status) in mappedTasks()"
             :key="status"
@@ -94,49 +90,43 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import axios from "axios";
 import TaskCard from "@/components/TaskCard.vue";
 import TaskContent from "@/components/TaskContent.vue";
 import TaskEditor from "@/components/TaskEditor.vue";
 
-const tasks = ref([
-  {
-    name: "Task A",
-    dueDate: "2024-03-01",
-    username: "Charlie",
-    status: "To Do",
-  },
-  {
-    name: "Task 1",
-    dueDate: "2024-02-25",
-    username: "Alice",
-    status: "In Progress",
-  },
-  {
-    name: "Task 2",
-    dueDate: "2024-02-28",
-    username: "Bob",
-    status: "In Progress",
-  },
-  {
-    name: "Completed Task 1",
-    dueDate: "2024-02-18",
-    username: "Dave",
-    status: "Done",
-  },
-  {
-    name: "Completed Task 2",
-    dueDate: "2024-02-20",
-    username: "Eve",
-    status: "Done",
-  },
-]);
+const tasks = ref([]);  
+const baseUrl = "http://localhost:3000"
+
+onMounted(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    axios
+      .get(`${baseUrl}/api/task`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          order: "asc"
+        }
+      })
+      .then((response) => {
+        tasks.value = response.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks:", error);
+      });
+  } else {
+    console.log("No token found, please log in.");
+  }
+});
 
 function mappedTasks() {
   const mapped = {
     "To Do": [],
     "In Progress": [],
-    Done: [],
+    "Done": [],
   };
 
   tasks.value.forEach((task) => {
