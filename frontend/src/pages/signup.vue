@@ -1,5 +1,6 @@
 
 
+
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
@@ -27,6 +28,7 @@
         </div>
 
         <div>
+
           <label class="block text-gray-700 font-medium">確認密碼</label>
           <input 
             v-model="confirmPassword"
@@ -48,12 +50,12 @@
       </form>
 
       <p class="text-center text-gray-600 mt-4">
+
         已經有帳號？ <router-link to="/login" class="text-blue-500 hover:underline">登入</router-link>
       </p>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref } from 'vue'
@@ -110,5 +112,4 @@ const register = async () => {
     console.error('Error:', error);
   }
 }
-
 </script>
