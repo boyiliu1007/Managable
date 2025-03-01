@@ -1,13 +1,11 @@
-
-
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">📝 註冊</h2>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">📝 Signup</h2>
 
       <form @submit.prevent="register" class="space-y-4">
         <div>
-          <label class="block text-gray-700 font-medium">帳號</label>
+          <label class="block text-gray-700 font-medium">Account</label>
           <input 
             v-model="username"
             type="text" 
@@ -17,7 +15,7 @@
         </div>
 
         <div>
-          <label class="block text-gray-700 font-medium">密碼</label>
+          <label class="block text-gray-700 font-medium">Password</label>
           <input 
             v-model="password"
             type="password" 
