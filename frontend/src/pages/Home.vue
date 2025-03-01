@@ -205,5 +205,4 @@ function saveTask(task) {
   closeModal();
 }
 
-
 </script>
