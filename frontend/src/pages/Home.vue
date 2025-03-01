@@ -86,6 +86,15 @@
         </div>
       </div>
     </div>
+
+    <!-- this is a dark overlay, shown if the newTask button is clicked -->
+    <div
+      v-if="showNewTaskModal"
+      class="fixed inset-0 flex items-center justify-center"
+      :style="{ background: 'rgba(0, 0, 0, 0.3)' }"
+    >
+        <NewTask @close="showNewTaskModal = false" @taskAdded="taskAdded" />
+    </div>
   </div>
 </template>
 
@@ -95,6 +104,7 @@ import axios from "axios";
 import TaskCard from "@/components/TaskCard.vue";
 import TaskContent from "@/components/TaskContent.vue";
 import TaskEditor from "@/components/TaskEditor.vue";
+import NewTask from "@/components/NewTask.vue";
 
 const tasks = ref([]);  
 const baseUrl = "http://localhost:3000"
@@ -112,6 +122,7 @@ onMounted(() => {
         }
       })
       .then((response) => {
+        console.log(response.data);
         tasks.value = response.data;
       })
       .catch((error) => {
@@ -124,9 +135,9 @@ onMounted(() => {
 
 function mappedTasks() {
   const mapped = {
-    "To Do": [],
-    "In Progress": [],
-    "Done": [],
+    "todo": [],
+    "in progress": [],
+    "done": [],
   };
 
   tasks.value.forEach((task) => {
@@ -137,10 +148,20 @@ function mappedTasks() {
 }
 
 const showModal = ref(false);
+const showNewTaskModal = ref(false);
 const selectedTask = ref(null);
 const modalLeft = ref("50%"); // default center
 const isCenter = ref(false); // to handle translate
 const isEditting = ref(false);
+
+const newTask = () => {
+  showNewTaskModal.value = true;
+};
+
+const taskAdded = (newTask) => {
+  tasks.value.push(newTask);
+  showNewTaskModal.value = false;
+};
 
 const openModal = (task, status) => {
   selectedTask.value = task;
