@@ -83,7 +83,7 @@ const register = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/register', {  // 確保符合後端 API 路徑
+    const response = await fetch('http://localhost:3000/api/user/register', {  // 確保符合後端 API 路徑
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

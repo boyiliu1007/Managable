@@ -183,4 +183,5 @@ function saveTask(task) {
   console.log("Task saved!", task);
   closeModal();
 }
+
 </script>

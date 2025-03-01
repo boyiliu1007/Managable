@@ -15,9 +15,11 @@ const login = async () => {
     errorMsg.value = 'Please fill out all fields!';
     return;
   }
+  console.log(username.value);
+  console.log(password.value);
 
   try {
-    const response = await fetch('http://localhost:3000/login', {
+    const response = await fetch('http://localhost:3000/api/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
