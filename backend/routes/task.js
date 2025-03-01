@@ -7,7 +7,6 @@ const router = express.Router();
 
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
-    console.log(token);
     if (!token || !token.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Access denied' });
     }
@@ -27,10 +26,11 @@ const verifyToken = (req, res, next) => {
 
 router.post('/add', verifyToken, async (req, res) => {
     try {
+        // console.log(req.body);
         const { title, description = "", due, status } = req.body;
         const user = await User.findById(req.user.id);
         const username = user.username;
-
+        // console.log(due);
         const newTask = new Task({
             title,
             description,
