@@ -67,36 +67,48 @@ const errorMsg = ref('')
 const successMsg = ref('')
 
 const register = async () => {
-  errorMsg.value = ''
-  successMsg.value = ''
+  errorMsg.value = '';
+  successMsg.value = '';
 
   if (!username.value || !password.value || !confirmPassword.value) {
-    errorMsg.value = '所有欄位都必須填寫！'
-    return
+    errorMsg.value = 'You need to fill out all the blanks！';
+    return;
   }
 
   if (password.value !== confirmPassword.value) {
-    errorMsg.value = '兩次輸入的密碼不一致！'
-    return
+    errorMsg.value = 'Not the same password！';
+    return;
   }
 
-  // 模擬 API 延遲 1.5 秒
-  setTimeout(() => {
-    if (username.value === 'test') {
-      errorMsg.value = '此帳號已被註冊！'
+  try {
+    const response = await fetch('http://localhost:3000/register', {  // 確保符合後端 API 路徑
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      successMsg.value = 'Success! Please login';
+      username.value = '';
+      password.value = '';
+      confirmPassword.value = '';
+
+      // 1.5 秒後跳轉到登入頁
+      setTimeout(() => router.push('/login'), 1500);
     } else {
-      successMsg.value = '註冊成功！請登入'
-      setTimeout(() => router.push('/login'), 1500) // 1.5 秒後跳轉到登入頁
+      errorMsg.value = data.error; // 顯示後端回傳的錯誤訊息
     }
-  }, 1500)
+  } catch (error) {
+    errorMsg.value = 'Registration failed, please try again later.';
+    console.error('Error:', error);
+  }
 }
 
-
-return router
-return username 
-return password 
-return confirmPassword 
-return errorMsg
-return successMsg
-return register
 </script>

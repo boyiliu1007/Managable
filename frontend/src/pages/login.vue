@@ -7,13 +7,37 @@ const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
 
-const login = () => {
-  // 模擬登入驗證（這裡可以改成呼叫後端 API）
-  if (username.value === 'admin' && password.value === '1234') {
-    localStorage.setItem('token', 'fake_token_123') // 存入假 Token
-    router.push('/home') // 跳轉到 Home 頁面
-  } else {
-    errorMsg.value = '帳號或密碼錯誤！'
+const login = async () => {
+  errorMsg.value = '';
+
+  if (!username.value || !password.value) {
+    errorMsg.value = 'Please fill out all fields!';
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('token', data.token); // 儲存 JWT Token
+      router.push('/home'); // 成功後跳轉頁面
+    } else {
+      errorMsg.value = data.error; // 顯示後端錯誤訊息
+    }
+  } catch (error) {
+    errorMsg.value = 'Login failed, please try again later.';
+    console.error('Error:', error);
   }
 }
 
