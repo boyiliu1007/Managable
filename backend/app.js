@@ -5,6 +5,7 @@ import cors from 'cors';  // Import the CORS middleware
 
 import userRoutes from './routes/user.js';
 import taskRoutes from './routes/task.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ mongoose.connect(process.env.MONGODB_URI)
 // API routes
 app.use('/api/user', userRoutes);
 app.use('/api/task', taskRoutes);
+app.use(errorHandler);
 
 // Start server
 app.listen(process.env.PORT, () => {

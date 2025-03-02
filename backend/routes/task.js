@@ -2,115 +2,92 @@ import express from 'express';
 import Task from '../models/task.js';
 import User from '../models/user.js'
 import { verifyToken } from '../middleware/auth.js';
+import { catchAsync } from '../utils/catchAsync.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 const router = express.Router();
 
-router.post('/', verifyToken, async (req, res) => {
-    try {
-        const { title, description = "", due, status } = req.body;
-        const user = await User.findById(req.user.id);
-        const username = user.username;
+router.post('/', verifyToken, catchAsync(async (req, res, next) => {
+    const { title, description = "", due, status } = req.body;
+    const user = await User.findById(req.user.id);
+    const username = user.username;
 
-        if (!title || !due) {
-            return res.status(400).json({ error: 'Title and due date are required' });
-        }
-
-        const newTask = new Task({
-            title,
-            description,
-            due,
-            status: status || 'todo',
-            username: username
-        });
-        await newTask.save();
-        res.status(201).json({ 
-            message: 'Task created successfully', 
-            task: newTask 
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!title || !due) {
+        return next(new AppError('Title and due date are required', 400));
     }
-});
 
-router.get('/', verifyToken, async (req, res) => {
-    try {
-        const { sortBy, order, status } = req.query;
-        let sortOptions = {};
-        if (sortBy) {
-            sortOptions[sortBy] = order === 'asc' ? 1 : -1;
-        } else if (order) {
-            sortOptions['due'] = order === 'asc' ? 1 : -1;
-        } else {
-            sortOptions = { due: 1 };
-        }
+    const newTask = new Task({
+        title,
+        description,
+        due,
+        status: status || 'todo',
+        username: username
+    });
+    
+    await newTask.save();
+    res.status(201).json({ 
+        message: 'Task created successfully', 
+        task: newTask 
+    });
+}));
 
-        const filterOptions = {};
-        if (status) {
-            filterOptions.status = status;
-        }
+router.get('/', verifyToken, catchAsync(async (req, res) => {
+    const { sortBy, order, status } = req.query;
 
-        const tasks = await Task.find(filterOptions).sort(sortOptions);
-        res.json(tasks);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    const sortField = sortBy || 'due';
+    const sortOrder = order === 'desc' ? -1 : 1;
+    const sortOptions = { [sortField]: sortOrder };
+
+    const filterOptions = status ? { status } : {};
+
+    const tasks = await Task.find(filterOptions).sort(sortOptions);
+    res.json(tasks);
+}));
+
+router.get('/:id', verifyToken, catchAsync(async (req, res, next) => {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+        return next(new AppError('Task not found', 404));
     }
-});
+    
+    res.json(task);
+}));
 
-router.get('/:id', verifyToken, async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-        res.json(task);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.put('/:id', verifyToken, catchAsync(async (req, res, next) => {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+        return next(new AppError('Task not found', 404));
     }
-});
 
-router.put('/:id', verifyToken, async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
+    const allowedUpdates = ['title', 'description', 'due', 'status'];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-        const allowedUpdates = ['title', 'description', 'due', 'status'];
-        const updates = Object.keys(req.body);
-        const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
-
-        if (!isValidOperation) {
-            return res.status(400).json({ error: 'Invalid updates!' });
-        }
-
-        updates.forEach((update) => {
-            task[update] = req.body[update];
-        });
-        await task.save();
-        res.json({
-            message: 'Task updated successfully',
-            task: task.toJSON()
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!isValidOperation) {
+        return next(new AppError('Invalid updates!', 400));
     }
-});
 
-router.delete('/:id', verifyToken, async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-        await task.deleteOne();
-        res.json({ 
-            message: 'Task deleted successfully',
-            task: task.toJSON()
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    updates.forEach((update) => {
+        task[update] = req.body[update];
+    });
+    await task.save();
+    res.json({
+        message: 'Task updated successfully',
+        task: task.toJSON()
+    });
+}));
+
+router.delete('/:id', verifyToken, catchAsync(async (req, res, next) => {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+        return next(new AppError('Task not found', 404));
     }
-});
+    await task.deleteOne();
+    res.json({ 
+        message: 'Task deleted successfully',
+        task: task.toJSON()
+    });
+}));
 
 export default router;
