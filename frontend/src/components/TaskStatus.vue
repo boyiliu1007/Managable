@@ -15,11 +15,11 @@ const props = defineProps({
 
 function getBgColor(status) {
   switch (status) {
-    case "To Do":
+    case "todo":
       return "bg-red-100";
-    case "In Progress":
+    case "in progress":
       return "bg-orange-100";
-    case "Done":
+    case "done":
       return "bg-green-100";
     default:
       return "bg-gray-100";
@@ -28,11 +28,11 @@ function getBgColor(status) {
 
 function getDotColor(status) {
   switch (status) {
-    case "To Do":
+    case "todo":
       return "bg-red-400";
-    case "In Progress":
+    case "in progress":
       return "bg-orange-400";
-    case "Done":
+    case "done":
       return "bg-green-400";
     default:
       return "bg-gray-400";
