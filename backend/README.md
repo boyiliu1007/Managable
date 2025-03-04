@@ -24,6 +24,20 @@ npm run dev
 | 400 | application/json | `{ "error": "Username and password are required" }` |
 | 400 | application/json | `{ "error": "Username already exists" }` |
 | 201 | application/json | `{ "message": "User created successfully" }` |
+
+**Example**
+```javascript
+fetch('/api/user/register', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: 'user',
+        password: 'password'
+    })
+})
+```
 </details>
 
 <details>
@@ -41,6 +55,20 @@ npm run dev
 | 400 | application/json | `{ "error": "Username and password are required" }` |
 | 400 | application/json | `{ "error": "Invalid password" }` |
 | 200 | application/json | `{ "token": "<Token>" }` |
+
+**Example**
+```javascript
+fetch('/api/user/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: 'user',
+        password: 'password'
+    })
+})
+```
 </details>
 
 ### Task
@@ -52,16 +80,66 @@ The following endpoints require a valid bearer token in the `Authorization` head
 <summary><code>GET /api/task</code> - Get all tasks</summary>
 
 **Query**
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| sortBy | String | Sort tasks by a field |
-| order | asc/desc | Sort order |
-| status | String | Filter tasks by status |
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| sortBy | String | No | Sort tasks by a field |
+| order | asc/desc | No | Sort order |
+| status | String | No | Filter tasks by status |
 
 **Response**
 | HTTP Code | Content-Type | Body |
 | --------- | ------------ | ---- |
 | 200 | application/json | Array of tasks |
+
+**Example**
+```javascript
+fetch('/api/task?order=desc', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+})
+```
+</details>
+
+<!-- Add a task -->
+<details>
+<summary><code>POST /api/task/:id</code> - Add a task</summary>
+
+**Body**
+| Name | Type | Required | Description |
+| ---- | ---- | -------- | ----------- |
+| title | String | Yes | Title |
+| description | String | No | Description |
+| due | Date | No | Due date |
+| status | String | No | Status (todo / in_progress / done) |
+| username | String | Yes | Username |
+    
+
+**Response**
+| HTTP Code | Content-Type | Body |
+| --------- | ------------ | ---- |
+| 201 | application/json | `{ "message": "Task created successfully", "task": <Task> }` |
+| 400 | application/json | `{ "error": "Title and due date are required" }` |
+
+**Example**
+```javascript
+fetch('/api/task', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+        title: 'Task',
+        description: 'Description',
+        due: '2025-12-31',
+        status: 'todo',
+        username: 'username'
+    })
+})
+```
 </details>
 
 <!-- Get a Task -->
@@ -78,22 +156,17 @@ The following endpoints require a valid bearer token in the `Authorization` head
 | --------- | ------------ | ---- |
 | 200 | application/json | Task |
 | 404 | application/json | `{ "error": "Task not found" }` |
-</details>
 
-<!-- Add a task -->
-<details>
-<summary><code>POST /api/task/:id</code> - Add a task</summary>
-
-**Params**
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| id | String | Task ID |
-
-**Response**
-| HTTP Code | Content-Type | Body |
-| --------- | ------------ | ---- |
-| 201 | application/json | Task |
-
+**Example**
+```javascript
+fetch('/api/task/12345', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+})
+```
 </details>
 
 <!-- Edit a task -->
@@ -109,6 +182,20 @@ The following endpoints require a valid bearer token in the `Authorization` head
 | HTTP Code | Content-Type | Body |
 | --------- | ------------ | ---- |
 | 200 | application/json | Task |
+
+**Example**
+```javascript
+fetch('/api/task/12345', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+        status: 'done'
+    })
+})
+```
 </details>
 
 <!-- Delete a task -->
@@ -125,4 +212,15 @@ The following endpoints require a valid bearer token in the `Authorization` head
 | --------- | ------------ | ---- |
 | 200 | application/json | `{ "message": "Task deleted" }` |
 
+
+**Example**
+```javascript
+fetch('/api/task/12345', {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+})
+```
 </details>
