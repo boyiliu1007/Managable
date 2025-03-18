@@ -14,9 +14,9 @@
     name="status"
     class="border rounded-md p-1.5 w-full"
   >
-    <option value="To Do">To Do</option>
-    <option value="In Progress">In Progress</option>
-    <option value="Done">Done</option>
+    <option value="todo">To Do</option>
+    <option value="in progress">In Progress</option>
+    <option value="done">Done</option>
   </select>
   <label for="due" class="text-gray-600 text-sm">Due</label>
   <input
@@ -67,4 +67,9 @@ defineProps({
     required: true,
   },
 });
+
+
+
+
+
 </script>

@@ -66,7 +66,7 @@
           class="flex flex-row items-center gap-x-2.5 mt-4 text-white"
         >
           <button
-            @click="deleteTask"
+            @click="deleteTask(selectedTask)"
             class="bg-red-500 px-4 py-2 rounded-md cursor-pointer"
           >
             Delete
@@ -108,9 +108,9 @@ import NewTask from "@/components/NewTask.vue";
 
 const tasks = ref([]);  
 const baseUrl = "http://localhost:3000"
+const token = localStorage.getItem('token');
 
 onMounted(() => {
-  const token = localStorage.getItem('token');
   if (token) {
     axios
       .get(`${baseUrl}/api/task`, {
@@ -122,7 +122,7 @@ onMounted(() => {
         }
       })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         tasks.value = response.data;
       })
       .catch((error) => {
@@ -168,10 +168,10 @@ const openModal = (task, status) => {
   showModal.value = true;
 
   // adjust modal position based on status
-  if (status === "To Do") {
+  if (status === "todo") {
     modalLeft.value = "5%"; // left
     isCenter.value = false;
-  } else if (status === "In Progress") {
+  } else if (status === "in progress") {
     modalLeft.value = "50%"; // center
     isCenter.value = true;
   } else {
@@ -183,26 +183,42 @@ const openModal = (task, status) => {
 const closeModal = () => {
   showModal.value = false;
   selectedTask.value = null;
+  // window.location.reload();
 };
 
 function editTask() {
   isEditting.value = true;
 }
 
-function deleteTask() {
+async function deleteTask(task) {
   if(confirm("Are you sure you want to delete this task?")) {
+    
+    try {
+      const response = await fetch(`${baseUrl}/api/task/${task._id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Task deleted successfully!");
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      alert("Failed to delete task.");
+    }
     closeModal();
   } 
 }
 
 function cancelEdit() {
   isEditting.value = false;
-}
-
-function saveTask(task) {
-  isEditting.value = false;
-  console.log("Task saved!", task);
-  closeModal();
 }
 
 
