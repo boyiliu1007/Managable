@@ -57,8 +57,11 @@
         <TaskEditor
           v-if="isEditting"
           :task="selectedTask"
+          :baseUrl="baseUrl"
+          :token="token"
+          :id="selectedTask._id"
           v-on:cancel="cancelEdit"
-          v-on:save="saveTask"
+          @close="closeModal"
         />
 
         <div
@@ -183,7 +186,8 @@ const openModal = (task, status) => {
 const closeModal = () => {
   showModal.value = false;
   selectedTask.value = null;
-  // window.location.reload();
+  isEditting.value = false;
+  window.location.reload();
 };
 
 function editTask() {
