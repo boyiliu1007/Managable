@@ -54,6 +54,8 @@
         :class="{ 'translate-x-[-50%]': isCenter }"
       >
         <TaskContent v-if="!isEditting" :task="selectedTask" />
+        <hr v-if="!isEditting" class="border-t-1 border-gray-300 my-[1%]"/>
+        <p v-if="!isEditting" class="text-gray-600 text-sm">Description: {{ selectedTask.description }}</p>
         <TaskEditor
           v-if="isEditting"
           :task="selectedTask"
@@ -225,5 +227,8 @@ function cancelEdit() {
   isEditting.value = false;
 }
 
-
+const logout = () => {
+  localStorage.removeItem("token"); 
+  window.location.href = "/login";
+};
 </script>

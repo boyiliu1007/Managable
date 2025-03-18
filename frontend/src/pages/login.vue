@@ -85,7 +85,7 @@ const login = async () => {
       </form>
 
       <p class="text-center text-gray-600 mt-4">
-        還沒有帳號？ <a href="#" class="text-blue-500 hover:underline">註冊</a>
+        還沒有帳號？ <router-link to="/signup" class="text-blue-500 hover:underline">註冊</router-link>
       </p>
     </div>
   </div>
