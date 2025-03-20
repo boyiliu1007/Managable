@@ -227,8 +227,10 @@ function cancelEdit() {
   isEditting.value = false;
 }
 
+
 const logout = () => {
   localStorage.removeItem("token"); 
   window.location.href = "/login";
 };
+
 </script>
