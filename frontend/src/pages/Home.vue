@@ -98,7 +98,7 @@
       class="fixed inset-0 flex items-center justify-center"
       :style="{ background: 'rgba(0, 0, 0, 0.3)' }"
     >
-        <NewTask @close="showNewTaskModal = false" @taskAdded="taskAdded" />
+        <NewTask @close="closeModal" @taskAdded="taskAdded" />
     </div>
   </div>
 </template>
@@ -187,6 +187,7 @@ const openModal = (task, status) => {
 
 const closeModal = () => {
   showModal.value = false;
+  showNewTaskModal.value = false;
   selectedTask.value = null;
   isEditting.value = false;
   window.location.reload();
