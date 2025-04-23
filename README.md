@@ -38,7 +38,7 @@ The backend is built using Express.js and MongoDB, providing APIs for user authe
 
 ---
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Node.js (v16 or later)
