@@ -73,5 +73,5 @@ The backend is built using Express.js and MongoDB, providing APIs for user authe
 1. Register a new account via the signup page.
 2. Log in with your credentials.
 3. Create, edit, and manage tasks on the home page.
-4. Drag and drop tasks between categories to update their status.
+
 
